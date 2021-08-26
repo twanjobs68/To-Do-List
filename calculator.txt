@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+​
+  <head>
+    <meta charset="utf-8" />
+    <title>Browser Calculator</title>
+  </head>
+​
+  <style>
+    @import url(http://fonts.googleapis.com/css?family=Oswald:700|Orbitron);
+​
+html{
+  height: 100vh;
+  width: 100vw;
+  background:
+  radial-gradient(50% 30% ellipse at center top, #201e40 1%, rgba(75, 74, 74, 0) 100%),
+  radial-gradient(60% 50% ellipse at center bottom, #261226 1%, #7a797a 100%);
+}
+​
+body {
+  /* background: rgb(66, 77, 224); */
+  box-sizing: border-box;
+  margin: auto;
+  padding: 1.3em;
+  width: 100vw;
+}
+​
+.l-row {
+  float: left;
+  top: 22.25em;
+}
+​
+.buttons {
+  overflow: hidden;
+  padding: 1.2em 0 0 0.8em;
+}
+​
+.buttons div {
+  background: rgb(211, 232, 252);
+  border-radius: .1em;
+  box-shadow: inset 0px 1px 0px #60646e, 0px 5px .2px 1px #334a5e;
+  cursor: pointer; /* hand icon for cursor on buttons*/
+  float: left; /* float allows block elements to share space in it's container */
+  font-family: 'Oswald', sans-serif; 
+  width: 70px;
+  height: 40px;
+  margin: 0 7px 11px 0;
+  line-height: 42px; /* much like spacing a word document, this sizes the lines between text */
+  text-align: center;
+}
+​
+#equals {
+  height: 4.3em;
+  top: -2.4em;
+  position:relative;
+}
+​
+.buttons div:active {
+  background-color: #4AA3DF;
+  top: 3px;
+  box-shadow: inset 0px 1px 0px #5E626D, 0px 2px 0px 0px #45637F;
+}
+​
+.operator {
+  font-size: 1.3em;
+}
+​
+​
+#calculator {
+  background: linear-gradient(to bottom left, rgb(68, 89, 110), rgb(112, 132, 155), rgb(86, 112, 139));
+  border-radius: .2em;
+  border: outset silver 10px;
+  padding: .5em;
+  width: 20.7em;
+  margin: 0 auto;
+}
+​
+#screen-container {
+  background: rgb(147, 154, 172);
+  border-radius: 1em;
+  padding: 1.2em;
+}
+​
+#outputDisplay {
+  background: linear-gradient(to bottom left, rgb(126, 193, 248), rgb(192, 225, 252),rgb(126, 193, 248));
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.4em;
+  font-weight: 600;
+  height: 1.1em;
+  overflow: hidden;
+  padding: .5em .6em;
+  width: 12em;
+  z-index: 1;
+}
+​
+#zero {
+  width: 14em;
+}
+​
+#clear {
+  background: orange;
+  width: 7em;
+}
+  </style>
+  <body>
+​
+    <div id="calculator">
+      <div id="screen-container">
+        <div id="outputDisplay"></div>
+      </div>
+​
+      <div>
+        <div class="buttons">
+          <div class="operator" id="clear">C</div>
+          <div class="operator" id="divide">&divide;</div>
+          <div class="operator" id="times">&times;</div>
+          <div>7</div>
+          <div>8</div>
+          <div>9</div>
+          <div class="operator" id="minus">&minus;</div>
+          <div>4</div>
+          <div>5</div>
+          <div>6</div>
+          <div class="operator" id="plus">&plus;</div>
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div id="zero">0</div>
+          <div class="operator" id="equals">&equals;</div>
+        </div>
+      </div>
+    </div>
+  </body>
+​
+​
+<script>
+document.addEventListener("DOMContentLoaded", (e) => {
+    //             + − × ÷ = 
+    
+    document.addEventListener("click", (e) => {
+        console.log(e.target);
+        helper = e.target;
+    })
+​
+    var buttons = document.querySelector(".buttons");
+    let outputDisplay = document.getElementById("outputDisplay");
+    let equalsButton = document.getElementById("equals");
+    let clear = document.getElementById("clear");
+    let accumulator, modifier, x, y, result;
+​
+​
+    clear.addEventListener("click", (e) => {
+​
+        outputDisplay.innerText = "";
+​
+    });
+​
+    buttons.addEventListener("click", (e) => {
+        if (
+            outputDisplay.innerText !== "Error" &&
+            e.target.id !== "clear" &&
+            e.target.id !== "equals" &&
+            e.target.className !== "buttons"
+        ){
+            outputDisplay.innerText += e.target.innerText;
+        }
+    });
+​
+    //             + − × ÷ = 
+    equalsButton.addEventListener("click", (e) => {
+​
+        accumulator = outputDisplay.innerText;
+        if (accumulator.includes("×")) {
+​
+            modifier = accumulator.split("×"); // native string method
+​
+            x = parseInt(modifier[0], 10); //string , radix (the mathematical base, does not default to 10)
+            y = parseInt(modifier[1], 10); //string , radix (the mathematical base, does not default to 10)
+​
+            result = x * y;
+​
+            if (isNaN(result)) {
+​
+                outputDisplay.innerText = "Error";
+​
+            } else {
+​
+                outputDisplay.innerText = result;
+​
+            }
+            // outputDisplay.innerText = result; //if there is no NaN check the output will display NaN if trying to add operators
+​
+        } 
+​
+        else if (accumulator.includes("÷")) {
+​
+            modifier = accumulator.split("÷");
+​
+            x = parseInt(modifier[0], 10); //string , radix (the mathematical base, does not default to 10)
+            y = parseInt(modifier[1], 10); //string , radix (the mathematical base, does not default to 10)
+​
+            result = x / y;
+            if (isNaN(result) || !isFinite(result)) {
+​
+                outputDisplay.innerText = "Error";
+​
+            } else {
+​
+                outputDisplay.innerText = result;
+​
+            }
+        } 
+​
+        else if (accumulator.includes("+")) {
+​
+            modifier = accumulator.split("+");
+​
+            x = parseInt(modifier[0], 10); //string , radix (the mathematical base, does not default to 10)
+            y = parseInt(modifier[1], 10); //string , radix (the mathematical base, does not default to 10)
+​
+            result = x + y;
+​
+            if (isNaN(result)) {
+​
+                outputDisplay.innerText = "Error";
+​
+            } else {
+​
+                outputDisplay.innerText = result;
+​
+            }
+        } 
+​
+        else if (accumulator.includes("−")) {
+​
+            modifier = accumulator.split("−");
+​
+            x = parseInt(modifier[0], 10); //string , radix (the mathematical base, does not default to 10)
+            y = parseInt(modifier[1], 10); //string , radix (the mathematical base, does not default to 10)
+​
+            result = x - y;
+​
+            if (isNaN(result)) {
+​
+                outputDisplay.innerText = "Error";
+​
+            } else {
+​
+                outputDisplay.innerText = result;
+​
+            }
+        }
+    });
+​
+​
+});
+​
+​
+​
+/*
+warm-up solution
+​
+function tempConv(tempInt, corf){
+  corf = corf.toLowerCase();
+  if(corf == 'c' || corf == 'celsius'){
+    tempInt = (tempInt * 9) / 5 + 32;
+    console.log(tempInt, 'F')
+  }
+  if(corf == 'f' || corf == 'fahrenheit'){
+    tempInt = (tempInt - 32) * 5 / 9;
+    console.log(tempInt, 'C')
+​
+  }
+}
+tempConv(33, 'CELSIUS')
+*/
+</script>
+​
+</html>
+<!-- + − × ÷ =  -->
